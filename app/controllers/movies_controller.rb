@@ -1,6 +1,6 @@
 class MoviesController < ApplicationController
   helper:all
-
+  
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
@@ -12,7 +12,29 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    sort_id = params[:sort_id]
+    if sort_id == nil
+      @movies = Movie.all
+    end
+    
+    @title_hilite = ''
+    @date_hilite = ''
+    if sort_id == 'title'
+      @movies = Movie.ascorder(sort_id)
+      @title_hilite = 'hilite'
+    elsif sort_id == 'release_date'
+      @movies = Movie.ascorder(sort_id)
+      @date_hilite = 'hilite'
+    end 
+  end
+  
+  def get
+    list = {}
+    ratings.each do |key , value|
+      list += key
+    end
+    
+    redirect_to movies_path
   end
 
   def new
@@ -42,18 +64,5 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-  
-  def sort
-    sort_key = params[:sort_key]
-    @title_hilite = ''
-    @date_hilite = ''
-    @movies = Movie.ascorder(sort_key)
-    if sort_key == 'title'
-      @title_hilite = 'hilite'
-    elsif sort_key == 'release_date'
-      @date_hilite = 'hilite'
-    end 
-    render '/movies/index'
-  end 
 
 end
