@@ -12,31 +12,35 @@ class MoviesController < ApplicationController
   end
 
   def index
-    sort_id = params[:sort_id]
-    if sort_id == nil
-      @movies = Movie.all
+    @all_ratings = Movie.listRatings
+    
+    if params[:ratings]
+      @def_ratings = params[:ratings]
+    elsif session[:ratings]
+      @def_ratings = session[:ratings]
+    else
+      @def_ratings = Hash[@all_ratings.collect{|item| ["item", '1']}]
+      #@all_ratings.each do |rating| #initial default values
+      #  (@def_ratings ||= { })[rating] = 1
+      #end
+    end
+    @movies = Movie.get_Rated_Movies(@def_ratings.keys())
+    
+    if params[:sort_id] != nil
+      @title_hilite = ''
+      @date_hilite = ''
+      if params[:sort_id] == 'title'
+        @movies = Movie.ascorder('title')
+        @title_hilite = 'hilite'
+      elsif params[:sort_id] == 'release_date'
+        @movies = Movie.ascorder('release_date')
+        @date_hilite = 'hilite'
+      end
     end
     
-    @title_hilite = ''
-    @date_hilite = ''
-    if sort_id == 'title'
-      @movies = Movie.ascorder(sort_id)
-      @title_hilite = 'hilite'
-    elsif sort_id == 'release_date'
-      @movies = Movie.ascorder(sort_id)
-      @date_hilite = 'hilite'
-    end 
+    session[:ratings] = @def_ratings
   end
   
-  def get
-    list = {}
-    ratings.each do |key , value|
-      list += key
-    end
-    
-    redirect_to movies_path
-  end
-
   def new
     # default: render 'new' template
   end
