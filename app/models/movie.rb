@@ -10,7 +10,8 @@ class Movie < ActiveRecord::Base
         return list
     end
     
-    def self.get_Rated_Movies(list)
-        Movie.where(rating: list)
-    end
+    # Get the movies in sorted oreder with ratings filter
+    def self.get_Rated_Movies(list, sort_key = nil)
+        @movies = Movie.where(rating: list).order(sort_key)
+    end 
 end
