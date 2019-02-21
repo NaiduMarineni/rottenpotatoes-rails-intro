@@ -19,10 +19,7 @@ class MoviesController < ApplicationController
     elsif session[:ratings]
       @def_ratings = session[:ratings]
     else
-      @def_ratings = Hash[@all_ratings.collect{|item| ["item", '1']}]
-      #@all_ratings.each do |rating| #initial default values
-      #  (@def_ratings ||= { })[rating] = 1
-      #end
+      @def_ratings = Hash[@all_ratings.collect{|item| [item, '1']}]
     end
     @movies = Movie.get_Rated_Movies(@def_ratings.keys())
     
